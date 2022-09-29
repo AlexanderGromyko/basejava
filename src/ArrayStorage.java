@@ -18,7 +18,7 @@ public class ArrayStorage {
     void save(Resume r) {
         if (size() < storage.length) {
             storage[size()] = r;
-            storageSize ++;
+            storageSize++;
         }
     }
 
@@ -34,7 +34,7 @@ public class ArrayStorage {
             if (storage[i].uuid == uuid) {
                 storage[i] = storage[size() - 1];
                 storage[size() - 1] = null;
-                storageSize --;
+                storageSize--;
                 break;
             }
         }
