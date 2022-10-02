@@ -22,7 +22,7 @@ public class ArrayStorage {
     }
 
     public void clear() {
-        Arrays.fill(storage, 0, size - 1, null);
+        Arrays.fill(storage, 0, size, null);
         size = 0;
     }
 
