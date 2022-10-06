@@ -5,16 +5,16 @@ import com.urise.webapp.model.Resume;
 import java.util.Arrays;
 
 public abstract class AbstractArrayStorage implements Storage {
-    protected static final int STORAGE_LIMIT = 10000;
+    protected static final int STORAGE_LIMIT = 5;
 
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size = 0;
 
-    final public int size() {
+    public final int size() {
         return size;
     }
 
-    final public void clear() {
+    public final void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
     }
@@ -22,11 +22,11 @@ public abstract class AbstractArrayStorage implements Storage {
     /**
      * @return array, contains only Resumes in storage (without null)
      */
-    final public Resume[] getAll() {
+    public final Resume[] getAll() {
         return Arrays.copyOf(storage, size);
     }
 
-    final public Resume get(String uuid) {
+    public final Resume get(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
             System.out.println("Resume " + uuid + " not exist");
@@ -35,7 +35,7 @@ public abstract class AbstractArrayStorage implements Storage {
         return storage[index];
     }
 
-    final public void update(Resume resume) {
+    public final void update(Resume resume) {
         int index = getIndex(resume.getUuid());
         if (index < 0) {
             System.out.println("Resume " + resume.getUuid() + " not found!");
@@ -44,7 +44,7 @@ public abstract class AbstractArrayStorage implements Storage {
         }
     }
 
-    final public void save(Resume r) {
+    public final void save(Resume r) {
         int index = getIndex(r.getUuid());
         if (size == storage.length) {
             System.out.println("Unable to save resume " + r.getUuid() + ". Storage is full!");
