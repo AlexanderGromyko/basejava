@@ -1,5 +1,8 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.exception.ExistSorageException;
+import com.urise.webapp.exception.NotExistStorageException;
+import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
@@ -29,8 +32,7 @@ public abstract class AbstractArrayStorage implements Storage {
     public final Resume get(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
-            System.out.println("Resume " + uuid + " not exist");
-            return null;
+            throw new NotExistStorageException(uuid);
         }
         return storage[index];
     }
@@ -38,7 +40,7 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void update(Resume resume) {
         int index = getIndex(resume.getUuid());
         if (index < 0) {
-            System.out.println("Resume " + resume.getUuid() + " not found!");
+            throw new NotExistStorageException(resume.getUuid());
         } else {
             storage[index] = resume;
         }
@@ -47,9 +49,9 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void save(Resume r) {
         int index = getIndex(r.getUuid());
         if (size == storage.length) {
-            System.out.println("Unable to save resume " + r.getUuid() + ". Storage is full!");
+            throw new StorageException("Storage overflow", r.getUuid());
         } else if (index >= 0) {
-            System.out.println("Resume " + r.getUuid() + " is already in storage!");
+            throw new ExistSorageException(r.getUuid());
         } else {
             saveInArray(r, index);
         }
@@ -58,12 +60,14 @@ public abstract class AbstractArrayStorage implements Storage {
     public void delete(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
-            System.out.println("Resume with uuid " + uuid + " not found!");
-            return;
+            throw new NotExistStorageException(uuid);
         }
         deleteFromArray(index);
     }
 
+    public final int getStorageLimit() {
+        return STORAGE_LIMIT;
+    }
     protected abstract void saveInArray(Resume r, int i);
 
     protected abstract void deleteFromArray(int i);
