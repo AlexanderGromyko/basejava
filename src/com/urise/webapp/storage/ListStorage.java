@@ -1,13 +1,24 @@
 package com.urise.webapp.storage;
 
-import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.model.Resume;
 
 import java.util.ArrayList;
 
-public class ListStorage extends AbstractStorage{
+public class ListStorage extends AbstractStorage {
+
     protected ArrayList<Resume> storage = new ArrayList<>();
 
+    @Override
+    public final void clear() {
+        storage.clear();
+    }
+
+    @Override
+    public Resume[] getAll() {
+        return storage.toArray(new Resume[0]);
+    }
+
+    @Override
     public final int size() {
         return storage.size();
     }
@@ -17,39 +28,34 @@ public class ListStorage extends AbstractStorage{
         return Integer.MAX_VALUE;
     }
 
-    public final void clear() {
-        storage.clear();
-    }
-
-    public Resume[] getAll() {
-        return storage.toArray(new Resume[0]);
+    @Override
+    protected boolean isExist(Object searchKey) {
+        if ((Integer) searchKey < 0) return false;
+        return true;
     }
 
     @Override
-    protected final Resume getByIndex(int index) {
-        return storage.get(index);
-    }
-
-    @Override
-    protected final void updateByIndex(int index, Resume resume) {
-        storage.set(index, resume);
-    }
-
-    public final void save(Resume r) {
-        int index = getIndex(r.getUuid());
-        if (index >= 0) {
-            throw new ExistStorageException(r.getUuid());
-        } else {
-            storage.add(r);
-        }
-    }
-
-    @Override
-    protected final void deleteByIndex(int index) {
-        storage.remove(index);
-    }
-
-    protected int getIndex(String uuid) {
+    protected final Integer getSearchKey(String uuid) {
         return storage.indexOf(new Resume(uuid));
+    }
+
+    @Override
+    protected void doSave(Resume r, Object searchKey) {
+        storage.add(r);
+    }
+
+    @Override
+    protected Resume doGet(Object searchKey) {
+        return storage.get((Integer) searchKey);
+    }
+
+    @Override
+    protected void doDelete(Object searchKey) {
+        storage.remove((int) searchKey);
+    }
+
+    @Override
+    protected void doUpdate(Resume r, Object searchKey) {
+        storage.set((Integer) searchKey, r);
     }
 }
