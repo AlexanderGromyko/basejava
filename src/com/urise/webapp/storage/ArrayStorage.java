@@ -1,6 +1,5 @@
 package com.urise.webapp.storage;
 
-import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
 /**
@@ -19,18 +18,12 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void doSave(Resume r, Object searchKey) {
-        if (size == storage.length) {
-            throw new StorageException("Storage overflow", r.getUuid());
-        }
+    protected void saveResume(Resume r, Object searchKey) {
         storage[size] = r;
-        size++;
     }
 
     @Override
-    protected void doDelete(Object searchKey) {
+    protected void deleteResume(Object searchKey) {
         storage[(Integer) searchKey] = storage[size - 1];
-        storage[size - 1] = null;
-        size--;
     }
 }
