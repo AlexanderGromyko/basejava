@@ -28,11 +28,6 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public final int getStorageLimit() {
-        return STORAGE_LIMIT;
-    }
-
-    @Override
     protected boolean isExist(Object searchKey) {
         return (Integer) searchKey >= 0;
     }

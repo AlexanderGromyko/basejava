@@ -7,52 +7,46 @@ import com.urise.webapp.model.Resume;
 public abstract class AbstractStorage implements Storage {
 
     public final void save(Resume r) {
-        Object searchKey = getSearchKey(r.getUuid());
-        if (isExist(searchKey)) {
-            getExistingSearchKey(r.getUuid());
-        } else {
-            doSave(r, searchKey);
-        }
+        Object searchKey = getNotExistingSearchKey(r.getUuid());
+        doSave(r, searchKey);
     }
 
     public final Resume get(String uuid) {
-        Object searchKey = getSearchKey(uuid);
-        if (!isExist(searchKey)) {
-            getNotExistingSearchKey(uuid);
-        }
+        Object searchKey = getExistingSearchKey(uuid);
         return doGet(searchKey);
     }
 
     public final void delete(String uuid) {
-        Object searchKey = getSearchKey(uuid);
-        if (!isExist(searchKey)) {
-            getNotExistingSearchKey(uuid);
-        }
+        Object searchKey = getExistingSearchKey(uuid);
         doDelete(searchKey);
     }
 
     public final void update(Resume r) {
-        Object searchKey = getSearchKey(r.getUuid());
+        Object searchKey = getExistingSearchKey(r.getUuid());
+        doUpdate(r, searchKey);
+    }
+
+    private Object getExistingSearchKey(Object anyKey) {
+        Object searchKey = getSearchKey(anyKey);
         if (!isExist(searchKey)) {
-            getNotExistingSearchKey(r.getUuid());
-        } else {
-            doUpdate(r, searchKey);
+            throw new NotExistStorageException(anyKey);
         }
+        return searchKey;
     }
 
-    private void getExistingSearchKey(String uuid) {
-        throw new ExistStorageException(uuid);
-    }
-
-    private void getNotExistingSearchKey(String uuid) {
-        throw new NotExistStorageException(uuid);
+    private Object getNotExistingSearchKey(Object anyKey) {
+        Object searchKey = getSearchKey(anyKey);
+        if (isExist(searchKey)) {
+            throw new ExistStorageException(searchKey);
+        }
+        return searchKey;
     }
 
     protected abstract boolean isExist(Object searchKey);
 
     //protected abstract Object getSearchKey(Resume r);
 
-    protected abstract Object getSearchKey(String uuid);
+    protected abstract Object getSearchKey(Object searchKey);
 
     protected abstract void doSave(Resume r, Object searchKey);
 

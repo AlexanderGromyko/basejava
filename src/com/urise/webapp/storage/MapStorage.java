@@ -2,11 +2,12 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.model.Resume;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 public class MapStorage extends AbstractStorage {
 
-    protected TreeMap<String, Resume> storage = new TreeMap<>();
+    protected Map<String, Resume> storage = new TreeMap<>();
 
     @Override
     public void clear() {
@@ -24,19 +25,14 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    public int getStorageLimit() {
-        return Integer.MAX_VALUE;
-    }
-
-    @Override
     protected boolean isExist(Object searchKey) {
         return searchKey != null;
     }
 
     @Override
-    protected Object getSearchKey(String uuid) {
-        if (storage.get(uuid) != null) {
-            return uuid;
+    protected Object getSearchKey(Object searchKey) {
+        if (storage.get((String) searchKey) != null) {
+            return searchKey;
         }
         return null;
     }

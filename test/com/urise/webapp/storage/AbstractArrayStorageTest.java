@@ -5,6 +5,7 @@ import com.urise.webapp.model.Resume;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static com.urise.webapp.storage.AbstractArrayStorage.STORAGE_LIMIT;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public abstract class AbstractArrayStorageTest extends AbstractStorageTest {
@@ -17,7 +18,7 @@ public abstract class AbstractArrayStorageTest extends AbstractStorageTest {
     void storageOverflow() {
         storage.clear();
         try {
-            for (int i = 0; i < storage.getStorageLimit(); i++) {
+            for (int i = 0; i < STORAGE_LIMIT; i++) {
                 storage.save(new Resume());
             }
         } catch (Exception e) {
