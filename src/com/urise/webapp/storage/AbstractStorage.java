@@ -26,20 +26,20 @@ public abstract class AbstractStorage implements Storage {
         doUpdate(r, searchKey);
     }
 
-    private Object getExistingSearchKey(Object anyKey) {
-        Object searchKey = getSearchKey(anyKey);
-        if (!isExist(searchKey)) {
-            throw new NotExistStorageException(anyKey);
+    private Object getExistingSearchKey(Object searchKey) {
+        Object existingSearchKey = getSearchKey(searchKey);
+        if (!isExist(existingSearchKey)) {
+            throw new NotExistStorageException(searchKey);
         }
-        return searchKey;
+        return existingSearchKey;
     }
 
-    private Object getNotExistingSearchKey(Object anyKey) {
-        Object searchKey = getSearchKey(anyKey);
-        if (isExist(searchKey)) {
-            throw new ExistStorageException(searchKey);
+    private Object getNotExistingSearchKey(Object searchKey) {
+        Object existingSearchKey = getSearchKey(searchKey);
+        if (isExist(existingSearchKey)) {
+            throw new ExistStorageException(existingSearchKey);
         }
-        return searchKey;
+        return existingSearchKey;
     }
 
     protected abstract boolean isExist(Object searchKey);
