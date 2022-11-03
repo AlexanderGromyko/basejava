@@ -3,7 +3,9 @@ package com.urise.webapp.storage;
 import com.urise.webapp.model.Resume;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ListStorage extends AbstractStorage {
 
@@ -17,6 +19,11 @@ public class ListStorage extends AbstractStorage {
     @Override
     public Resume[] getAll() {
         return storage.toArray(new Resume[0]);
+    }
+
+    @Override
+    public List<Resume> doGetAllSorted(Comparator<Resume> resumeComparator) {
+        return storage.stream().sorted(resumeComparator).collect(Collectors.toList());
     }
 
     @Override

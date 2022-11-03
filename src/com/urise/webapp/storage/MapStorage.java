@@ -2,8 +2,11 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.model.Resume;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class MapStorage extends AbstractStorage {
 
@@ -20,6 +23,11 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
+    public List<Resume> doGetAllSorted(Comparator<Resume> resumeComparator) {
+        return storage.values().stream().sorted(resumeComparator).collect(Collectors.toList());
+    }
+
+    @Override
     public int size() {
         return storage.size();
     }
@@ -31,7 +39,7 @@ public class MapStorage extends AbstractStorage {
 
     @Override
     protected Object getSearchKey(Object searchKey) {
-        if (storage.get((String) searchKey) != null) {
+        if (storage.containsKey((String) searchKey)) {
             return searchKey;
         }
         return null;
