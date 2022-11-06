@@ -7,12 +7,13 @@ public class MapResumeStorage extends AbstractMapStorage {
     @Override
     protected Object getSearchKey(Object searchKey) {
         if (searchKey == null) return null;
-        return storage.get(((Resume) searchKey).getUuid());
+        //return storage.get(((Resume) searchKey).getUuid());
+        return storage.get((String) searchKey);
     }
 
     @Override
     protected void doSave(Resume r, Object searchKey) {
-        storage.put(((Resume) searchKey).getUuid(), r);
+        storage.put(r.getUuid(), r);
     }
 
     @Override
