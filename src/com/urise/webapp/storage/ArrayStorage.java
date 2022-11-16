@@ -8,9 +8,9 @@ import com.urise.webapp.model.Resume;
 public class ArrayStorage extends AbstractArrayStorage {
 
     @Override
-    protected final Integer getSearchKey(Object searchKey) {
+    protected final Integer getSearchKey(String Uuid) {
         for (int i = 0; i < size; i++) {
-            if (storage[i].getUuid().equals(searchKey)) {
+            if (storage[i].getUuid().equals(Uuid)) {
                 return i;
             }
         }

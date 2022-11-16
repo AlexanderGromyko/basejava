@@ -1,6 +1,7 @@
 package com.urise.webapp;
 
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.model.SectionType;
 import com.urise.webapp.storage.ListStorage;
 
 import java.io.BufferedReader;
@@ -72,5 +73,40 @@ public class MainArray {
             }
         }
         System.out.println("----------------------------");
+    }
+
+    public static class ResumeTestData {
+        public static void main (String[] Args) {
+
+        }
+    }
+
+    public static class TestSingleton {
+        private static TestSingleton instance;
+
+        public static TestSingleton getInstance() {
+            if (instance == null) {
+                instance = new TestSingleton();
+            }
+            return instance;
+        }
+
+        private TestSingleton() {
+
+        }
+
+        public static void main(String[] args) {
+            TestSingleton.getInstance().toString();
+            Singleton instance = Singleton.valueOf("INSTANCE");
+            System.out.println(instance.name());
+
+            for (SectionType type : SectionType.values()) {
+                System.out.println(type.getTitle());
+            }
+        }
+
+        public enum Singleton {
+            INSTANCE
+        }
     }
 }

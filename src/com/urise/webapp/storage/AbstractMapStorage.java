@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public abstract class AbstractMapStorage extends AbstractStorage {
+public abstract class AbstractMapStorage<SK> extends AbstractStorage<SK> {
 
     protected Map<String, Resume> storage = new TreeMap<>();
 
@@ -32,7 +32,7 @@ public abstract class AbstractMapStorage extends AbstractStorage {
     }
 
     @Override
-    protected boolean isExist(Object searchKey) {
+    protected boolean isExist(SK searchKey) {
         return searchKey != null;
     }
 }
