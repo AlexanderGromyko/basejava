@@ -4,21 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Organization {
-    private List<Period> periods;
+    private final List<Period> periods;
     private String name;
     private String website;
 
     public Organization(String name) {
+        this(name, "");
         this.name = name;
+    }
+
+    public Organization(String name,String website) {
+        this.name = name;
+        this.website = website;
         this.periods = new ArrayList<>();
     }
 
     public void setWebsite(String website) {
         this.website = website;
-    }
-
-    public void setPeriods(List <Period> periods) {
-        this.periods = new ArrayList<>(periods);
     }
 
     public void addPeriod(Period period) {

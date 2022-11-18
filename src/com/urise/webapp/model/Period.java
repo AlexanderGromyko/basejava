@@ -3,7 +3,18 @@ package com.urise.webapp.model;
 import java.time.LocalDate;
 
 public class Period {
+    private LocalDate dateTo;
+    private String title;
+    private String description;
+
     private LocalDate dateFrom;
+
+    public Period(LocalDate dateFrom, LocalDate dateTo, String title, String description) {
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+        this.title = title;
+        this.description = description;
+    }
 
     public LocalDate getDateFrom() {
         return dateFrom;
@@ -19,15 +30,6 @@ public class Period {
 
     public String getDescription() {
         return description;
-    }
-
-    private LocalDate dateTo;
-    private String title;
-    private String description;
-
-    public Period(LocalDate dateFrom, LocalDate dateTo) {
-        this.dateFrom = dateFrom;
-        this.dateTo = dateTo;
     }
 
     public void setTitle(String title) {

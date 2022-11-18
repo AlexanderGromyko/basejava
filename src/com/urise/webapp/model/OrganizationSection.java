@@ -7,12 +7,8 @@ import java.util.List;
 public class OrganizationSection extends AbstractSection{
     private List<Organization> organizations;
 
-    public OrganizationSection() {
-        this(new ArrayList<>());
-    }
-
-    public OrganizationSection(List<Organization> organizations) {
-        this.organizations = new ArrayList(organizations);
+    public OrganizationSection(List organizations) {
+        this.organizations = organizations;
     }
 
     public void addOrganization(Organization organization) {

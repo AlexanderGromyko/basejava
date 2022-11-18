@@ -3,6 +3,7 @@ package com.urise.webapp;
 import com.urise.webapp.model.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class ResumeTestData {
     public static void main(String[] args) {
@@ -36,7 +37,7 @@ public class ResumeTestData {
         Resume resume = new Resume("Григорий Кислин");
 
         //EXPERIENCE (jobs)
-        OrganizationSection jobOrganizations = new OrganizationSection();
+        OrganizationSection jobOrganizations = new OrganizationSection(new ArrayList<>());
 
         Organization organization = createOrganization("Java Online Projects", "http://javaops.ru");
         organization.addPeriod(createPeriod(LocalDate.of(2013,10,1),
@@ -106,7 +107,7 @@ public class ResumeTestData {
         resume.setSection(SectionType.EXPERIENCE, jobOrganizations);
 
         //EDUCATION
-        OrganizationSection educationOrganizations = new OrganizationSection();
+        OrganizationSection educationOrganizations = new OrganizationSection(new ArrayList<>());
 
         organization = createOrganization("Coursera", "https://www.coursera.org/course/progfun");
         organization.addPeriod(createPeriod(LocalDate.of(2013,3,1),
@@ -150,7 +151,7 @@ public class ResumeTestData {
         resume.setSection(SectionType.EDUCATION, educationOrganizations);
 
         //QUALIFICATIONS
-        ListSection qualifications = new ListSection();
+        ListSection qualifications = new ListSection(new ArrayList<>());
         qualifications.addString("JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2");
         qualifications.addString("Version control: Subversion, Git, Mercury, ClearCase, Perforce");
         qualifications.addString("DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle, MySQL, SQLite, MS SQL, HSQLDB");
@@ -171,7 +172,7 @@ public class ResumeTestData {
         resume.setSection(SectionType.QUALIFICATIONS, qualifications);
 
         //ACHIEVEMENTS
-        ListSection achievements = new ListSection();
+        ListSection achievements = new ListSection(new ArrayList<>());
         achievements.addString("Организация команды и успешная реализация Java проектов для сторонних заказчиков: приложения автопарк на стеке Spring Cloud/микросервисы, система " +
                 "мониторинга показателей спортсменов на Spring Boot, участие в проекте МЭШ на Play-2, многомодульный Spring Boot + Vaadin проект для комплексных DIY смет");
         achievements.addString("С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven. Многопоточность. XML (JAXB/StAX). " +
@@ -203,15 +204,12 @@ public class ResumeTestData {
     }
 
     private static Organization createOrganization(String name, String website) {
-        Organization organization = new Organization(name);
-        organization.setWebsite(website);
+        Organization organization = new Organization(name, website);
         return organization;
     }
 
     private static Period createPeriod(LocalDate dateFrom, LocalDate dateTo, String title, String description) {
-        Period period = new Period(dateFrom,dateTo);
-        period.setTitle(title);
-        period.setDescription(description);
+        Period period = new Period(dateFrom, dateTo, title, description);
         return period;
     }
 }

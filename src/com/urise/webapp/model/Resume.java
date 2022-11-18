@@ -9,8 +9,8 @@ import java.util.UUID;
 public class Resume implements Comparable<Resume>{
     private String uuid;
     private String fullName;
-    private EnumMap<ContactType, String> contacts;
-    private EnumMap<SectionType, AbstractSection> sections;
+    private final EnumMap<ContactType, String> contacts;
+    private final EnumMap<SectionType, AbstractSection> sections;
 
     public Resume() {
         this(UUID.randomUUID().toString(), "");

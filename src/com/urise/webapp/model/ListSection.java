@@ -1,13 +1,12 @@
 package com.urise.webapp.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ListSection extends AbstractSection{
-    private List<String> strings;
+    private final List<String> strings;
 
-    public ListSection() {
-        this.strings = new ArrayList();
+    public ListSection(List strings) {
+        this.strings = strings;
     }
 
     public void addString(String newString) {
@@ -15,7 +14,7 @@ public class ListSection extends AbstractSection{
     }
 
     public List getStrings() {
-        return new ArrayList<>(strings);
+        return strings;
     }
 
     @Override
