@@ -12,26 +12,23 @@ public class ResumeTestData {
     }
 
     private static void printResume(Resume resume) {
-        System.out.println(resume.getFullName());
+        System.out.println(resume);
         System.out.println("");
         System.out.println("Контакты:");
         resume.getContacts().forEach( (key, value) -> System.out.println(key.getTitle() + ": " + value));
-        System.out.println("");
-        System.out.println(SectionType.OBJECTIVE.getTitle() + ":");
-        resume.getSection(SectionType.OBJECTIVE).print();
-        System.out.println("");
-        System.out.println(SectionType.PERSONAL.getTitle() + ":");
-        resume.getSection(SectionType.PERSONAL).print();
-        System.out.println("");
-        System.out.println(SectionType.ACHIEVEMENTS.getTitle() + ":");
-        resume.getSection(SectionType.ACHIEVEMENTS).print();
-        System.out.println("");
-        System.out.println(SectionType.EXPERIENCE.getTitle() + ":");
-        resume.getSection(SectionType.EXPERIENCE).print();
-        System.out.println("");
-        System.out.println(SectionType.EDUCATION.getTitle() + ":");
-        resume.getSection(SectionType.EDUCATION).print();
+        printSection(resume, SectionType.OBJECTIVE);
+        printSection(resume, SectionType.PERSONAL);
+        printSection(resume, SectionType.ACHIEVEMENTS);
+        printSection(resume, SectionType.EXPERIENCE);
+        printSection(resume, SectionType.EDUCATION);
     }
+
+    private static void printSection(Resume resume, SectionType sectionType) {
+        System.out.println("");
+        System.out.println(sectionType.getTitle() + ":");
+        System.out.println(resume.getSection(sectionType));
+    }
+
 
     private static Resume createResume() {
         Resume resume = new Resume("Григорий Кислин");

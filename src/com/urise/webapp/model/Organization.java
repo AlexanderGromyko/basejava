@@ -2,6 +2,7 @@ package com.urise.webapp.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Organization {
     private final List<Period> periods;
@@ -9,14 +10,17 @@ public class Organization {
     private String website;
 
     public Organization(String name) {
-        this(name, "");
-        this.name = name;
+        this(name, "", new ArrayList<>());
     }
 
     public Organization(String name,String website) {
+        this(name, website, new ArrayList<>());
+    }
+
+    public Organization(String name,String website, List<Period> periods) {
         this.name = name;
         this.website = website;
-        this.periods = new ArrayList<>();
+        this.periods = periods;
     }
 
     public void setWebsite(String website) {
@@ -37,5 +41,27 @@ public class Organization {
 
     public String getWebsite() {
         return website;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Organization that = (Organization) o;
+        return periods.equals(that.periods) && name.equals(that.name) && Objects.equals(website, that.website);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(periods, name, website);
+    }
+
+    @Override
+    public String toString() {
+        return "Organization{" +
+                "periods=" + periods +
+                ", name='" + name + '\'' +
+                ", website='" + website + '\'' +
+                '}';
     }
 }

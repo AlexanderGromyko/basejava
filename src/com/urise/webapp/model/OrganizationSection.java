@@ -1,13 +1,17 @@
 package com.urise.webapp.model;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class OrganizationSection extends AbstractSection{
-    private List<Organization> organizations;
+    private final List<Organization> organizations;
 
-    public OrganizationSection(List organizations) {
+    public OrganizationSection() {
+        this(new ArrayList<>());
+    }
+
+    public OrganizationSection(List<Organization> organizations) {
         this.organizations = organizations;
     }
 
@@ -15,22 +19,30 @@ public class OrganizationSection extends AbstractSection{
         organizations.add(organization);
     }
 
-    public void setOrganizations(List<Organization> organizations) {
-        this.organizations = new ArrayList<>(organizations);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrganizationSection that = (OrganizationSection) o;
+        return organizations.equals(that.organizations);
     }
 
     @Override
-    public void print() {
+    public int hashCode() {
+        return Objects.hash(organizations);
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer str = new StringBuffer();
         organizations.stream().forEach((organization) -> {
-            System.out.println("organization: " + organization.getName());
-            System.out.println("website: " + organization.getWebsite());
+            str.append("organization: " + organization.getName());
+            str.append("\nwebsite: " + organization.getWebsite());
+            str.append("\n");
             for (Period period : organization.getPeriods()) {
-                System.out.println("from : " + period.getDateFrom().format(DateTimeFormatter.ofPattern("MM/YYYY")));
-                System.out.println("to : " + period.getDateTo().format(DateTimeFormatter.ofPattern("MM/YYYY")));
-                System.out.println(period.getTitle());
-                if (period.getDescription() != "") System.out.println(period.getDescription());
-                System.out.println();
+                str.append(period);
             }
         });
+        return str.toString();
     }
 }

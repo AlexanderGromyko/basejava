@@ -6,11 +6,11 @@ import java.util.UUID;
 /**
  * Initial resume class
  */
-public class Resume implements Comparable<Resume>{
-    private String uuid;
-    private String fullName;
+public class Resume implements Comparable<Resume> {
     private final EnumMap<ContactType, String> contacts;
     private final EnumMap<SectionType, AbstractSection> sections;
+    private String uuid;
+    private String fullName;
 
     public Resume() {
         this(UUID.randomUUID().toString(), "");
@@ -31,49 +31,12 @@ public class Resume implements Comparable<Resume>{
         return uuid;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
-    @Override
-    public String toString() {
-        return uuid;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        else if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Resume resume = (Resume) o;
-        return uuid.equals(resume.uuid);
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid.hashCode();
-    }
-
-    @Override
-    public int compareTo(Resume o) {
-        int compareResult = fullName.compareTo(o.fullName);
-        if (compareResult != 0) return compareResult;
-        return uuid.compareTo(o.uuid);
-    }
-
-    public void setContact(ContactType contactType, String contactValue) {
-        contacts.put(contactType, contactValue);
-    }
-
-    public void setSection(SectionType sectionType, AbstractSection sectionValue) {
-        sections.put(sectionType, sectionValue);
+    public String getFullName() {
+        return fullName;
     }
 
     public EnumMap<ContactType, String> getContacts() {
@@ -86,5 +49,41 @@ public class Resume implements Comparable<Resume>{
 
     public AbstractSection getSection(SectionType sectionType) {
         return sections.get(sectionType);
+    }
+
+    public void setContact(ContactType contactType, String contactValue) {
+        contacts.put(contactType, contactValue);
+    }
+
+    public void setSection(SectionType sectionType, AbstractSection sectionValue) {
+        sections.put(sectionType, sectionValue);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Resume resume = (Resume) o;
+        return uuid.equals(resume.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return fullName;
+    }
+
+    @Override
+    public int compareTo(Resume o) {
+        int compareResult = fullName.compareTo(o.fullName);
+        if (compareResult != 0) return compareResult;
+        return uuid.compareTo(o.uuid);
     }
 }

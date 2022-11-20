@@ -1,11 +1,12 @@
 package com.urise.webapp.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ListSection extends AbstractSection{
     private final List<String> strings;
 
-    public ListSection(List strings) {
+    public ListSection(List<String> strings) {
         this.strings = strings;
     }
 
@@ -13,12 +14,27 @@ public class ListSection extends AbstractSection{
         strings.add(newString);
     }
 
-    public List getStrings() {
+    public List<String> getStrings() {
         return strings;
     }
 
     @Override
-    public void print() {
-        strings.stream().forEach((v) -> System.out.println(v));
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListSection that = (ListSection) o;
+        return strings.equals(that.strings);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(strings);
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer str = new StringBuffer();
+        strings.stream().forEach((v) -> str.append(v+"\n"));
+        return str.toString();
     }
 }
