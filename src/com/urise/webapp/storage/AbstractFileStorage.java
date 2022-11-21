@@ -9,15 +9,17 @@ public class AbstractFileStorage {
 
     public void saveResume(Resume resume) throws IOException {
         if (dirExist()) {
-            FileOutputStream outputStream = new FileOutputStream(RESUME_DIRECTORY + "/" + resume.getUuid() + ".res");
-            doSave(resume, outputStream);
+            try (FileOutputStream outputStream = new FileOutputStream(RESUME_DIRECTORY + "/" + resume.getUuid() + ".res")) {
+                doSave(resume, outputStream);
+            }
         } else throw new IOException("Directory " + RESUME_DIRECTORY + " doesn't exist!");
     }
 
     public Resume getResume(String uuid) throws IOException, ClassNotFoundException {
         if (dirExist()) {
-            FileInputStream InputStream = new FileInputStream(RESUME_DIRECTORY + "/" + uuid + ".res");
-            return doGet(InputStream);
+            try (FileInputStream InputStream = new FileInputStream(RESUME_DIRECTORY + "/" + uuid + ".res")) {
+                return doGet(InputStream);
+            }
         } else throw new IOException("Directory " + RESUME_DIRECTORY + " doesn't exist!");
     }
 
