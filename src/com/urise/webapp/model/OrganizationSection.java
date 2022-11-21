@@ -1,10 +1,11 @@
 package com.urise.webapp.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class OrganizationSection extends AbstractSection{
+public class OrganizationSection extends AbstractSection implements Serializable {
     private final List<Organization> organizations;
 
     public OrganizationSection() {
@@ -36,7 +37,7 @@ public class OrganizationSection extends AbstractSection{
     public String toString() {
         StringBuffer str = new StringBuffer();
         organizations.stream().forEach((organization) -> {
-            str.append("organization: " + organization.getName());
+            str.append("\norganization: " + organization.getName());
             str.append("\nwebsite: " + organization.getWebsite());
             str.append("\n");
             for (Period period : organization.getPeriods()) {

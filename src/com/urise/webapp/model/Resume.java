@@ -1,12 +1,13 @@
 package com.urise.webapp.model;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.UUID;
 
 /**
  * Initial resume class
  */
-public class Resume implements Comparable<Resume> {
+public class Resume implements Comparable<Resume>, Serializable {
     private final EnumMap<ContactType, String> contacts;
     private final EnumMap<SectionType, AbstractSection> sections;
     private String uuid;

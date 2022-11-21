@@ -1,14 +1,22 @@
 package com.urise.webapp;
 
 import com.urise.webapp.model.*;
+import com.urise.webapp.storage.AbstractFileStorage;
+import com.urise.webapp.util.RandomGenerator;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class ResumeTestData {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         Resume testResume = createResume();
-        printResume(testResume);
+        Resume testResume1  = resumeGenerator("34234", "Alexander Gromyko");
+        //printResume(testResume1);
+        AbstractFileStorage abstractFileStorage = new AbstractFileStorage();
+        abstractFileStorage.saveResume(testResume1);
+        Resume savedResume = abstractFileStorage.getResume("34234");
+        printResume(savedResume);
     }
 
     private static void printResume(Resume resume) {
@@ -28,7 +36,6 @@ public class ResumeTestData {
         System.out.println(sectionType.getTitle() + ":");
         System.out.println(resume.getSection(sectionType));
     }
-
 
     private static Resume createResume() {
         Resume resume = new Resume("Григорий Кислин");
@@ -208,5 +215,48 @@ public class ResumeTestData {
     private static Period createPeriod(LocalDate dateFrom, LocalDate dateTo, String title, String description) {
         Period period = new Period(dateFrom, dateTo, title, description);
         return period;
+    }
+
+    public static Resume resumeGenerator(String uuid, String name) {
+        Resume resume = new Resume(uuid, name);
+        resume.setContact(ContactType.PHONE, RandomGenerator.phoneNumber());
+        resume.setContact(ContactType.SKYPE, RandomGenerator.skype(name));
+        resume.setContact(ContactType.EMAIL, RandomGenerator.email(name));
+        resume.setContact(ContactType.LINKEDIN, RandomGenerator.linkedin(name));
+        resume.setContact(ContactType.GITHUB, RandomGenerator.github(name));
+        resume.setContact(ContactType.STACKOVERFLOW, RandomGenerator.stackoverflow(name));
+        resume.setContact(ContactType.HOMEPAGE, RandomGenerator.homepage(name));
+
+        resume.setSection(SectionType.PERSONAL, new TextSection(RandomGenerator.randomExperienceTitle()));
+        resume.setSection(SectionType.OBJECTIVE, new TextSection(RandomGenerator.randomExperienceTitle()));
+        resume.setSection(SectionType.ACHIEVEMENTS, getFilledExperience());
+        resume.setSection(SectionType.QUALIFICATIONS, getFilledExperience());
+        resume.setSection(SectionType.EDUCATION, getFilledOrganizations());
+        resume.setSection(SectionType.EXPERIENCE, getFilledOrganizations());
+        return resume;
+    }
+
+    private static ListSection getFilledExperience() {
+        final int MINIMUM = 7;
+        final int MAXIMUM = 14;
+        ListSection achievements = new ListSection(new ArrayList<>());
+        for (int i = 0; i < RandomGenerator.randomNumber(MINIMUM, MAXIMUM); i++) achievements.addString(RandomGenerator.randomExperienceTitle());
+        return achievements;
+    }
+
+    private static OrganizationSection getFilledOrganizations() {
+        final int MINIMUM = 5;
+        final int MAXIMUM = 10;
+        OrganizationSection OrganizationsSection = new OrganizationSection(new ArrayList<>());
+        for (int i = 0; i < RandomGenerator.randomNumber(MINIMUM, MAXIMUM); i++) {
+            LocalDate minimumDate = RandomGenerator.randomLocalDate();
+            Organization organization = createOrganization(RandomGenerator.randomCompanyName(), RandomGenerator.site());
+            organization.addPeriod(createPeriod(minimumDate,
+                    RandomGenerator.randomLocalDate(minimumDate),
+                    RandomGenerator.randomExperienceTitle(),
+                    RandomGenerator.randomExperienceDescription()));
+            OrganizationsSection.addOrganization(organization);
+            }
+        return OrganizationsSection;
     }
 }
