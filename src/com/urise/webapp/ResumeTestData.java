@@ -1,22 +1,15 @@
 package com.urise.webapp;
 
 import com.urise.webapp.model.*;
-import com.urise.webapp.storage.AbstractFileStorage;
 import com.urise.webapp.util.RandomGenerator;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class ResumeTestData {
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) {
         Resume testResume = createResume();
-        Resume testResume1  = resumeGenerator("34234", "Alexander Gromyko");
-        //printResume(testResume1);
-        AbstractFileStorage abstractFileStorage = new AbstractFileStorage();
-        abstractFileStorage.saveResume(testResume1);
-        Resume savedResume = abstractFileStorage.getResume("34234");
-        printResume(savedResume);
+        printResume(testResume);
     }
 
     private static void printResume(Resume resume) {
