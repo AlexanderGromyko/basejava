@@ -90,7 +90,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        List<Resume> resumes = new ArrayList<>;
+        List<Resume> resumes = new ArrayList<>();
         for (File file : directory.listFiles()) {
             resumes.add(doGet(file));
         }
