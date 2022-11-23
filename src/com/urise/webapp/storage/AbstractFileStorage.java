@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractFileStorage extends AbstractStorage<File> {
-    private File directory;
+    private final File directory;
 
     protected AbstractFileStorage(File directory) {
         Objects.requireNonNull(directory, "directory must not be null");
@@ -24,13 +24,17 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
+        File[] listFiles = directory.listFiles();
+        if (listFiles == null) throw new StorageException("Unable to get list of files", directory.getName());
         for (File file : directory.listFiles()) {
-            file.delete();
+            doDelete(file);
         }
     }
 
     @Override
     public int size() {
+        File[] listFiles = directory.listFiles();
+        if (listFiles == null) throw new StorageException("Unable to get list of files", directory.getName());
         return directory.listFiles().length;
     }
 
@@ -57,43 +61,39 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected void doSave(Resume r, File file) {
         try {
-            file.createNewFile();
+            if (! file.createNewFile()) throw new StorageException("Unable to create file", file.getName());
             doWrite(r, file);
         } catch (IOException e) {
             throw new StorageException("IO error", file.getName(), e);
         }
     }
 
-    protected abstract void doWrite(Resume r, File file) throws IOException;
-
     @Override
     protected Resume doGet(File file) {
         try {
-            FileInputStream inputStream = new FileInputStream(file);
-            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-            Resume resume = (Resume) objectInputStream.readObject();
-            objectInputStream.close();
-            return resume;
+            return doRead(file);
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new StorageException("IO error", file.getName(), e);
         }
     }
 
     @Override
     protected void doDelete(File file) {
-        if (isExist(file)) {
-            file.delete();
-        }
+        if (! file.delete()) throw new StorageException("Unable to delete file ", file.getAbsolutePath());
     }
 
     @Override
     protected List<Resume> doCopyAll() {
         List<Resume> resumes = new ArrayList<>();
+        File[] listFiles = directory.listFiles();
+        if (listFiles == null) throw new StorageException("Unable to get list of files", directory.getName());
         for (File file : directory.listFiles()) {
             resumes.add(doGet(file));
         }
         return resumes;
     }
+
+    protected abstract void doWrite(Resume r, File file) throws IOException;
+
+    protected abstract Resume doRead(File file) throws IOException;
 }
