@@ -14,7 +14,7 @@ public class ResumeTestData {
 
     private static void printResume(Resume resume) {
         System.out.println(resume);
-        System.out.println("");
+        System.out.println();
         System.out.println("Контакты:");
         resume.getContacts().forEach( (key, value) -> System.out.println(key.getTitle() + ": " + value));
         printSection(resume, SectionType.OBJECTIVE);
@@ -25,7 +25,7 @@ public class ResumeTestData {
     }
 
     private static void printSection(Resume resume, SectionType sectionType) {
-        System.out.println("");
+        System.out.println();
         System.out.println(sectionType.getTitle() + ":");
         System.out.println(resume.getSection(sectionType));
     }
@@ -201,13 +201,11 @@ public class ResumeTestData {
     }
 
     private static Organization createOrganization(String name, String website) {
-        Organization organization = new Organization(name, website);
-        return organization;
+        return new Organization(name, website);
     }
 
     private static Period createPeriod(LocalDate dateFrom, LocalDate dateTo, String title, String description) {
-        Period period = new Period(dateFrom, dateTo, title, description);
-        return period;
+        return new Period(dateFrom, dateTo, title, description);
     }
 
     public static Resume resumeGenerator(String uuid, String name) {
