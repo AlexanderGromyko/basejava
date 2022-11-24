@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Period implements Serializable {
+    private static final long serialVersionUID = 1L;
     private LocalDate dateTo;
     private String title;
     private String description;

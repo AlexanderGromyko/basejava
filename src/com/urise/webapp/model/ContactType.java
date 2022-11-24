@@ -11,6 +11,7 @@ public enum ContactType implements Serializable {
     STACKOVERFLOW("Stackoverflow"),
     HOMEPAGE("homepage");
 
+    private static final long serialVersionUID = 1L;
     private final String title;
 
     ContactType(String title) {

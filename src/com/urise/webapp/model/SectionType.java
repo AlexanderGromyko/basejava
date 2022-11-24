@@ -10,6 +10,7 @@ public enum SectionType implements Serializable {
     EXPERIENCE("Опыт работы"),
     EDUCATION("Образование");
 
+    private static final long serialVersionUID = 1L;
     private final String title;
 
     SectionType(String title) {
