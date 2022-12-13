@@ -54,21 +54,6 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    void clear() {
-        storage.clear();
-        assertSize(0);
-        Resume[] expected = {};
-        Assertions.assertArrayEquals(expected, storage.getAll());
-    }
-
-//    @Test
-//    void getAll() {
-//        Resume[] expected = {RESUME_1, RESUME_2, RESUME_3};
-//        Assertions.assertArrayEquals(expected, storage.getAll());
-//        assertSize(expected.length);
-//    }
-
-    @Test
     void get() {
         assertGet(RESUME_1);
         assertGet(RESUME_2);

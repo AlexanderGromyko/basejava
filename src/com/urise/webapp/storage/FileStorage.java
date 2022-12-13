@@ -28,27 +28,14 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        File[] listFiles = directory.listFiles();
-        if (listFiles == null) {
-            throw new StorageException("Unable to get list of files", directory.getName());
-        }
-        for (File file : listFiles) {
+        for (File file : getListFiles()) {
             doDelete(file);
         }
     }
 
     @Override
-    public Resume[] getAll() {
-        return new Resume[0];
-    }
-
-    @Override
     public int size() {
-        File[] listFiles = directory.listFiles();
-        if (listFiles == null) {
-            throw new StorageException("Unable to get list of files", directory.getName());
-        }
-        return listFiles.length;
+        return getListFiles().length;
     }
 
     @Override
@@ -73,13 +60,13 @@ public class FileStorage extends AbstractStorage<File> {
     @Override
     protected void doSave(Resume r, File file) {
         try {
-            if (! file.createNewFile()) {
+            if (!file.createNewFile()) {
                 throw new StorageException("Unable to create file", file.getName());
             }
-            strategy.doWrite(r, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
             throw new StorageException("IO error", file.getName(), e);
         }
+        doUpdate(r, file);
     }
 
     @Override
@@ -93,7 +80,7 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected void doDelete(File file) {
-        if (! file.delete()) {
+        if (!file.delete()) {
             throw new StorageException("Unable to delete file ", file.getAbsolutePath());
         }
     }
@@ -101,13 +88,17 @@ public class FileStorage extends AbstractStorage<File> {
     @Override
     protected List<Resume> doCopyAll() {
         List<Resume> resumes = new ArrayList<>();
+        for (File file : getListFiles()) {
+            resumes.add(doGet(file));
+        }
+        return resumes;
+    }
+
+    private File[] getListFiles() {
         File[] listFiles = directory.listFiles();
         if (listFiles == null) {
             throw new StorageException("Unable to get list of files", directory.getName());
         }
-        for (File file : listFiles) {
-            resumes.add(doGet(file));
-        }
-        return resumes;
+        return listFiles;
     }
 }

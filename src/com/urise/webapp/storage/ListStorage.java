@@ -14,7 +14,6 @@ public class ListStorage extends AbstractStorage<Integer> {
         storage.clear();
     }
 
-    @Override
     public Resume[] getAll() {
         return storage.toArray(new Resume[0]);
     }
