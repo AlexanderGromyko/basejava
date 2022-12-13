@@ -1,7 +1,8 @@
-package com.urise.webapp.storage;
+package com.urise.webapp.storage.strategy;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.storage.AbstractStorage;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -15,7 +16,7 @@ public class PathStorage extends AbstractStorage<Path> {
     private final Path directory;
     private StorageStrategy strategy;
 
-    protected PathStorage(String dir, StorageStrategy strategy) {
+    public PathStorage(String dir, StorageStrategy strategy) {
         directory = Paths.get(dir);
         Objects.requireNonNull(directory, "directory must not be null");
         if (!Files.isDirectory(directory) || !Files.isWritable(directory)) {
