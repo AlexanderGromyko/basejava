@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class PathStorage extends AbstractStorage<Path> {
     private final Path directory;
@@ -29,20 +30,14 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     public void clear() {
-        try {
-            Files.list(directory).forEach(this::doDelete);
-        } catch (IOException e) {
-            throw new StorageException("Unable to get list of files", directory.getFileName().toString());
-        }
+        filesListStream().forEach(this::doDelete);
     }
+
+
 
     @Override
     public int size() {
-        try {
-            return ((int) Files.list(directory).count());
-        } catch (IOException e) {
-            throw new StorageException("Unable to get list of files", directory.getFileName().toString());
-        }
+        return (int) filesListStream().count();
     }
 
     @Override
@@ -95,11 +90,15 @@ public class PathStorage extends AbstractStorage<Path> {
     @Override
     protected List<Resume> doCopyAll() {
         List<Resume> resumes = new ArrayList<>();
+        filesListStream().forEach((file) -> resumes.add(doGet(file)));
+        return resumes;
+    }
+
+    private Stream<Path> filesListStream() {
         try {
-            Files.list(directory).forEach((file) -> resumes.add(doGet(file)));
+            return Files.list(directory);
         } catch (IOException e) {
             throw new StorageException("Unable to get list of files", directory.getFileName().toString());
         }
-        return resumes;
     }
 }
