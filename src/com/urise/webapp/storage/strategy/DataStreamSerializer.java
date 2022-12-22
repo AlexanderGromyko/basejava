@@ -35,7 +35,7 @@ public class DataStreamSerializer implements SerializerStrategy {
             for (int i = 0; i < size; i++) {
                 resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
             }
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < SectionType.values().length; i++) {
                 readSection(SectionType.valueOf(dis.readUTF()), resume, dis);
             }
             return resume;
