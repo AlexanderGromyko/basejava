@@ -1,11 +1,20 @@
 package com.urise.webapp.model;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TextSection extends AbstractSection implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final String content;
+    private static final String EMPTY_STRING = "";
+    private String content;
+
+    public TextSection() {
+        this(EMPTY_STRING);
+    }
 
     public TextSection(String content) {
         this.content = content;

@@ -1,12 +1,19 @@
 package com.urise.webapp.model;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ListSection extends AbstractSection implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final List<String> strings;
+    private List<String> strings;
+
+    public ListSection() {
+    }
 
     public ListSection(List<String> strings) {
         this.strings = strings;
@@ -16,7 +23,7 @@ public class ListSection extends AbstractSection implements Serializable {
         strings.add(newString);
     }
 
-    public List<String> getStrings() {
+    public List<String> getList() {
         return strings;
     }
 

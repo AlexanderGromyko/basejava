@@ -1,10 +1,14 @@
 package com.urise.webapp.model;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class OrganizationSection extends AbstractSection implements Serializable {
     private static final long serialVersionUID = 1L;
     private final List<Organization> organizations;
@@ -46,5 +50,9 @@ public class OrganizationSection extends AbstractSection implements Serializable
             }
         });
         return str.toString();
+    }
+
+    public List<Organization> getList() {
+        return organizations;
     }
 }

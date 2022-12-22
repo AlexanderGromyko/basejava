@@ -20,6 +20,7 @@ public class ResumeTestData {
         printSection(resume, SectionType.OBJECTIVE);
         printSection(resume, SectionType.PERSONAL);
         printSection(resume, SectionType.ACHIEVEMENTS);
+        printSection(resume, SectionType.QUALIFICATIONS);
         printSection(resume, SectionType.EXPERIENCE);
         printSection(resume, SectionType.EDUCATION);
     }
