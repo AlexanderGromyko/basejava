@@ -24,6 +24,9 @@ public class Period implements Serializable {
     }
 
     public Period(LocalDate dateFrom, LocalDate dateTo, String title, String description) {
+        Objects.requireNonNull(dateFrom, "dateFrom must not be null");
+        Objects.requireNonNull(dateTo, "dateTo must not be null");
+        Objects.requireNonNull(title, "title must not be null");
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
         this.title = title;
