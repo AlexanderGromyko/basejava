@@ -3,7 +3,7 @@ package com.urise.webapp.model;
 import java.io.Serializable;
 
 public enum SectionType implements Serializable {
-    PERSONAL("Личные качеситва"),
+    PERSONAL("Личные качества"),
     OBJECTIVE("Позиция"),
     ACHIEVEMENTS("Достижения"),
     QUALIFICATIONS("Квалификация"),

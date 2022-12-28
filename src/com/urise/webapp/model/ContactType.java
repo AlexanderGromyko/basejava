@@ -7,7 +7,7 @@ public enum ContactType implements Serializable {
     SKYPE("skype"),
     EMAIL("email"),
     LINKEDIN("LinkedIn"),
-    GITHUB("GitHUH"),
+    GITHUB("GitHUB"),
     STACKOVERFLOW("Stackoverflow"),
     HOMEPAGE("homepage");
 

@@ -5,8 +5,10 @@ import com.urise.webapp.model.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class DataStreamSerializer implements SerializerStrategy {
     @Override
@@ -19,11 +21,50 @@ public class DataStreamSerializer implements SerializerStrategy {
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
             }
-            for (SectionType sectionType : SectionType.values()) {
-                writeSection(sectionType, resume, dos);
-            }
+
+            Consumer <SectionType>  sectionConsumer  = sectionType -> {
+                try {
+                    dos.writeUTF(sectionType.name());
+                    switch (sectionType) {
+                        case PERSONAL, OBJECTIVE -> {
+                            TextSection textSection =  (TextSection) resume.getSection(sectionType);
+                            dos.writeUTF(textSection.getContent());
+                        }
+                        case ACHIEVEMENTS, QUALIFICATIONS -> {
+                            ListSection listSection = (ListSection) resume.getSection(sectionType);
+                            dos.writeInt(listSection.getList().size());
+                            for (String line : listSection.getList()) {
+                                dos.writeUTF(line);
+                            }
+                        }
+                        case EXPERIENCE, EDUCATION -> {
+                            OrganizationSection organizationSection = (OrganizationSection) resume.getSection(sectionType);
+                            dos.writeInt(organizationSection.getList().size());
+                            for (Organization organization : organizationSection.getList()) {
+                                dos.writeUTF(organization.getName());
+                                writeNullable(organization.getWebsite(), dos);
+                                List<Period> periods = organization.getPeriods();
+                                dos.writeInt(periods.size());
+                                for (Period period : periods) {
+                                    dos.writeUTF(period.getDateFrom().toString());
+                                    dos.writeUTF(period.getDateTo().toString());
+                                    dos.writeUTF(period.getTitle());
+                                    writeNullable(period.getDescription(), dos);
+                                }
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            };
+            writeWithException(List.of(SectionType.values()), dos, sectionConsumer);
+//            for (SectionType sectionType : SectionType.values()) {
+//                writeSection(sectionType, resume, dos);
+//            }
         }
     }
+
 
     @Override
     public Resume doRead(InputStream is) throws IOException {
@@ -32,6 +73,9 @@ public class DataStreamSerializer implements SerializerStrategy {
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
             int size = dis.readInt();
+//            for (ContactType contactType : ContactType.values()) {
+//                resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
+//            }
             for (int i = 0; i < size; i++) {
                 resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
             }
@@ -42,11 +86,18 @@ public class DataStreamSerializer implements SerializerStrategy {
         }
     }
 
+    private void writeWithException(Collection<SectionType> collection, DataOutputStream dos, Consumer <SectionType> consumer) {
+        for (SectionType element : collection) {
+            consumer.accept(element);
+        }
+    }
+
     private void writeSection(SectionType sectionType, Resume resume, DataOutputStream dos) throws IOException {
         dos.writeUTF(sectionType.name());
         switch (sectionType) {
             case PERSONAL, OBJECTIVE -> {
-                dos.writeUTF(resume.getSection(sectionType).toString());
+                TextSection textSection =  (TextSection) resume.getSection(sectionType);
+                dos.writeUTF(textSection.getContent());
             }
             case ACHIEVEMENTS, QUALIFICATIONS -> {
                 ListSection listSection = (ListSection) resume.getSection(sectionType);
