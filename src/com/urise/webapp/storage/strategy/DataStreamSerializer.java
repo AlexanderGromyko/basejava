@@ -6,7 +6,6 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 public class DataStreamSerializer implements SerializerStrategy {
@@ -20,10 +19,36 @@ public class DataStreamSerializer implements SerializerStrategy {
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
             }
-            ThrowingConsumer <SectionType, IOException> sectionConsumer  = sectionType -> {
-                writeSection(sectionType, resume, dos);
+
+            ThrowingConsumer<String> listSectionConsumer = stringItem -> {
+                dos.writeUTF(stringItem);
             };
-            writeWithException(List.of(SectionType.values()), sectionConsumer);
+            ThrowingConsumer<Period> periodConsumer = period -> {
+                dos.writeUTF(period.getDateFrom().toString());
+                dos.writeUTF(period.getDateTo().toString());
+                dos.writeUTF(period.getTitle());
+                dos.writeUTF(period.getDescription());
+            };
+            ThrowingConsumer<Organization> organizationSectionConsumer = organization -> {
+                dos.writeUTF(organization.getName());
+                dos.writeUTF(organization.getWebsite());
+                writeWithException(organization.getPeriods(), periodConsumer, dos);
+            };
+            for (SectionType sectionType : SectionType.values()) {
+                dos.writeUTF(sectionType.name());
+                switch (sectionType) {
+                    case PERSONAL, OBJECTIVE -> {
+                        TextSection textSection = (TextSection) resume.getSection(sectionType);
+                        dos.writeUTF(textSection.getContent());
+                    }
+                    case ACHIEVEMENTS, QUALIFICATIONS -> {
+                        writeWithException(((ListSection) resume.getSection(sectionType)).getList(), listSectionConsumer, dos);
+                    }
+                    case EXPERIENCE, EDUCATION -> {
+                        writeWithException(((OrganizationSection) resume.getSection(sectionType)).getList(), organizationSectionConsumer, dos);
+                    }
+                }
+            }
         }
     }
 
@@ -47,44 +72,10 @@ public class DataStreamSerializer implements SerializerStrategy {
         }
     }
 
-    private void writeWithException(Collection<SectionType> collection, ThrowingConsumer <SectionType, IOException> consumer) throws IOException {
-        for (SectionType element : collection) {
-            consumer.accept(element);
-        }
-    }
-
-    public void writeSection(SectionType sectionType, Resume resume, DataOutputStream dos) throws IOException {
-        dos.writeUTF(sectionType.name());
-        switch (sectionType) {
-            case PERSONAL, OBJECTIVE -> {
-                TextSection textSection =  (TextSection) resume.getSection(sectionType);
-                dos.writeUTF(textSection.getContent());
-            }
-            case ACHIEVEMENTS, QUALIFICATIONS -> {
-                ListSection listSection = (ListSection) resume.getSection(sectionType);
-                dos.writeInt(listSection.getList().size());
-                for (String line : listSection.getList()) {
-                    dos.writeUTF(line);
-                }
-            }
-            case EXPERIENCE, EDUCATION -> {
-                OrganizationSection organizationSection = (OrganizationSection) resume.getSection(sectionType);
-                dos.writeInt(organizationSection.getList().size());
-                for (Organization organization : organizationSection.getList()) {
-                    dos.writeUTF(organization.getName());
-                    //dos.writeUTF(organization.getWebsite());
-                    writeNullable(organization.getWebsite(), dos);
-                    List<Period> periods = organization.getPeriods();
-                    dos.writeInt(periods.size());
-                    for (Period period : periods) {
-                        dos.writeUTF(period.getDateFrom().toString());
-                        dos.writeUTF(period.getDateTo().toString());
-                        dos.writeUTF(period.getTitle());
-                        writeNullable(period.getDescription(), dos);
-                        //dos.writeUTF(period.getDescription());
-                    }
-                }
-            }
+    private <T> void writeWithException(Collection<T> collection, ThrowingConsumer<T> consumer, DataOutputStream dos) throws IOException {
+        dos.writeInt(collection.size());
+        for (T item : collection) {
+            consumer.write(item);
         }
     }
 
@@ -105,13 +96,13 @@ public class DataStreamSerializer implements SerializerStrategy {
                 OrganizationSection organizationSection = new OrganizationSection(new ArrayList<>());
                 int size = dis.readInt();
                 for (int i = 0; i < size; i++) {
-                    Organization organization = new Organization(dis.readUTF(), readNullable(dis));
+                    Organization organization = new Organization(dis.readUTF(), dis.readUTF());
                     int periodsSize = dis.readInt();
                     for (int y = 0; y < periodsSize; y++) {
                         organization.addPeriod(new Period(LocalDate.parse(dis.readUTF()),
                                 LocalDate.parse(dis.readUTF()),
                                 dis.readUTF(),
-                                readNullable(dis)));
+                                dis.readUTF()));
                     }
                     organizationSection.addOrganization(organization);
                 }
@@ -120,26 +111,7 @@ public class DataStreamSerializer implements SerializerStrategy {
         }
     }
 
-    private void writeNullable(String nullableString, DataOutputStream dos) throws IOException {
-        final int ONE = 1;
-        final int ZERO = 0;
-        final String EMPTY_STRING = "";
-        if (nullableString == null) {
-            dos.writeInt(ZERO);
-            dos.writeUTF(EMPTY_STRING);
-        } else {
-            dos.writeInt(ONE);
-            dos.writeUTF(nullableString);
-        }
-    }
-
-    private String readNullable(DataInputStream dis) throws IOException {
-        final int ONE = 1;
-        if (dis.readInt() == ONE) {
-            return dis.readUTF();
-        } else {
-            dis.readUTF();
-            return null;
-        }
+    private interface ThrowingConsumer<T> {
+        void write(T t) throws IOException;
     }
 }
