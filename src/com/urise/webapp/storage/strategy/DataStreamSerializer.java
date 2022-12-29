@@ -14,12 +14,11 @@ public class DataStreamSerializer implements SerializerStrategy {
         try (DataOutputStream dos = new DataOutputStream(os)) {
             dos.writeUTF(resume.getUuid());
             dos.writeUTF(resume.getFullName());
-            dos.writeInt(resume.getContacts().size());
-            for (Map.Entry<ContactType, String> entry : resume.getContacts().entrySet()) {
+
+            ThrowingConsumer <Map.Entry<ContactType, String>> contactConsumer = entry -> {
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
-            }
-
+            };
             ThrowingConsumer<String> listSectionConsumer = stringItem -> {
                 dos.writeUTF(stringItem);
             };
@@ -34,6 +33,9 @@ public class DataStreamSerializer implements SerializerStrategy {
                 dos.writeUTF(organization.getWebsite());
                 writeWithException(organization.getPeriods(), periodConsumer, dos);
             };
+
+            writeWithException(resume.getContacts().entrySet(), contactConsumer, dos);
+
             for (SectionType sectionType : SectionType.values()) {
                 dos.writeUTF(sectionType.name());
                 switch (sectionType) {
