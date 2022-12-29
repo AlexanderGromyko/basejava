@@ -40,8 +40,7 @@ public class DataStreamSerializer implements SerializerStrategy {
                 dos.writeUTF(sectionType.name());
                 switch (sectionType) {
                     case PERSONAL, OBJECTIVE -> {
-                        TextSection textSection = (TextSection) resume.getSection(sectionType);
-                        dos.writeUTF(textSection.getContent());
+                        dos.writeUTF(((TextSection) resume.getSection(sectionType)).getContent());
                     }
                     case ACHIEVEMENTS, QUALIFICATIONS -> {
                         writeWithException(((ListSection) resume.getSection(sectionType)).getList(), listSectionConsumer, dos);
