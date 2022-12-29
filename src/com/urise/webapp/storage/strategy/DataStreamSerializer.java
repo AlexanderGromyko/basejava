@@ -61,9 +61,6 @@ public class DataStreamSerializer implements SerializerStrategy {
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
             int size = dis.readInt();
-//            for (ContactType contactType : ContactType.values()) {
-//                resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-//            }
             for (int i = 0; i < size; i++) {
                 resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
             }
