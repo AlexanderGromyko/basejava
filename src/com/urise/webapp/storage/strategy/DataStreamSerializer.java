@@ -6,7 +6,6 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 public class DataStreamSerializer implements SerializerStrategy {
     @Override
@@ -15,26 +14,10 @@ public class DataStreamSerializer implements SerializerStrategy {
             dos.writeUTF(resume.getUuid());
             dos.writeUTF(resume.getFullName());
 
-            ThrowingConsumer <Map.Entry<ContactType, String>> contactConsumer = entry -> {
+            writeWithException(resume.getContacts().entrySet(), dos, entry -> {
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
-            };
-            ThrowingConsumer<String> listSectionConsumer = stringItem -> {
-                dos.writeUTF(stringItem);
-            };
-            ThrowingConsumer<Period> periodConsumer = period -> {
-                dos.writeUTF(period.getDateFrom().toString());
-                dos.writeUTF(period.getDateTo().toString());
-                dos.writeUTF(period.getTitle());
-                dos.writeUTF(period.getDescription());
-            };
-            ThrowingConsumer<Organization> organizationSectionConsumer = organization -> {
-                dos.writeUTF(organization.getName());
-                dos.writeUTF(organization.getWebsite());
-                writeWithException(organization.getPeriods(), periodConsumer, dos);
-            };
-
-            writeWithException(resume.getContacts().entrySet(), contactConsumer, dos);
+            });
 
             for (SectionType sectionType : SectionType.values()) {
                 dos.writeUTF(sectionType.name());
@@ -43,10 +26,21 @@ public class DataStreamSerializer implements SerializerStrategy {
                         dos.writeUTF(((TextSection) resume.getSection(sectionType)).getContent());
                     }
                     case ACHIEVEMENTS, QUALIFICATIONS -> {
-                        writeWithException(((ListSection) resume.getSection(sectionType)).getList(), listSectionConsumer, dos);
+                        writeWithException(((ListSection) resume.getSection(sectionType)).getList(), dos, stringItem -> {
+                            dos.writeUTF(stringItem);
+                        });
                     }
                     case EXPERIENCE, EDUCATION -> {
-                        writeWithException(((OrganizationSection) resume.getSection(sectionType)).getList(), organizationSectionConsumer, dos);
+                        writeWithException(((OrganizationSection) resume.getSection(sectionType)).getList(), dos, organization -> {
+                            dos.writeUTF(organization.getName());
+                            dos.writeUTF(organization.getWebsite());
+                            writeWithException(organization.getPeriods(), dos, period -> {
+                                dos.writeUTF(period.getDateFrom().toString());
+                                dos.writeUTF(period.getDateTo().toString());
+                                dos.writeUTF(period.getTitle());
+                                dos.writeUTF(period.getDescription());
+                            });
+                        });
                     }
                 }
             }
@@ -59,6 +53,15 @@ public class DataStreamSerializer implements SerializerStrategy {
             String uuid = dis.readUTF();
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
+
+//            ThrowingReadingConsumer<ContactType> contactConsumer = contactType -> {
+//                resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
+//            };
+//            ThrowingReadingConsumer<ListSection> listSectionConsumer = listSection -> {
+//                listSection.addString(dis.readUTF());
+//            };
+
+
             int size = dis.readInt();
             for (int i = 0; i < size; i++) {
                 resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
@@ -68,12 +71,20 @@ public class DataStreamSerializer implements SerializerStrategy {
             }
             return resume;
         }
+
     }
 
-    private <T> void writeWithException(Collection<T> collection, ThrowingConsumer<T> consumer, DataOutputStream dos) throws IOException {
+    private <T> void writeWithException(Collection<T> collection, DataOutputStream dos, ThrowingConsumer<T> consumer) throws IOException {
         dos.writeInt(collection.size());
         for (T item : collection) {
             consumer.write(item);
+        }
+    }
+
+    private <T> void readWithException(Collection<T> collection, ThrowingReadingConsumer<T> consumer, DataInputStream dis) throws IOException {
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            consumer.read((T) collection);
         }
     }
 
@@ -111,5 +122,9 @@ public class DataStreamSerializer implements SerializerStrategy {
 
     private interface ThrowingConsumer<T> {
         void write(T t) throws IOException;
+    }
+
+    private interface ThrowingReadingConsumer<T> {
+        void read(T t) throws IOException;
     }
 }
