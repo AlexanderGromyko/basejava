@@ -19,8 +19,8 @@ public class DataStreamSerializer implements SerializerStrategy {
                 dos.writeUTF(entry.getValue());
             });
 
-            dos.writeInt(resume.getSections().size());
-            for (SectionType sectionType : resume.getSections().keySet()) {
+
+            writeWithException(resume.getSections().keySet(), dos, sectionType -> {
                 dos.writeUTF(sectionType.name());
                 switch (sectionType) {
                     case PERSONAL, OBJECTIVE -> {
@@ -44,7 +44,7 @@ public class DataStreamSerializer implements SerializerStrategy {
                         });
                     }
                 }
-            }
+            });
         }
     }
 
@@ -58,8 +58,8 @@ public class DataStreamSerializer implements SerializerStrategy {
             readWithException(dis, () -> {
                     resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
             });
-            int sectionSize = dis.readInt();
-            for (int i = 0; i < sectionSize; i++) {
+
+            readWithException(dis, () -> {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
                 switch (sectionType) {
                     case PERSONAL, OBJECTIVE -> {
@@ -87,7 +87,7 @@ public class DataStreamSerializer implements SerializerStrategy {
                         resume.setSection(sectionType, organizationSection);
                     }
                 }
-            }
+            });
             return resume;
         }
     }
