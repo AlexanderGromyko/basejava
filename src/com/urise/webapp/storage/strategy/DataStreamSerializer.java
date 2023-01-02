@@ -54,24 +54,41 @@ public class DataStreamSerializer implements SerializerStrategy {
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
 
-//            ThrowingReadingConsumer<ContactType> contactConsumer = contactType -> {
-//                resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-//            };
-//            ThrowingReadingConsumer<ListSection> listSectionConsumer = listSection -> {
-//                listSection.addString(dis.readUTF());
-//            };
+            readWithException(dis, () -> {
+                    resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
+            });
 
-
-            int size = dis.readInt();
-            for (int i = 0; i < size; i++) {
-                resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-            }
             for (int i = 0; i < SectionType.values().length; i++) {
-                readSection(SectionType.valueOf(dis.readUTF()), resume, dis);
+                SectionType sectionType = SectionType.valueOf(dis.readUTF());
+                switch (sectionType) {
+                    case PERSONAL, OBJECTIVE -> {
+                        resume.setSection(sectionType, new TextSection(dis.readUTF()));
+                    }
+                    case ACHIEVEMENTS, QUALIFICATIONS -> {
+                        ListSection listSection = new ListSection(new ArrayList<>());
+                        readWithException(dis, () -> {
+                            listSection.addString(dis.readUTF());
+                        });
+                        resume.setSection(sectionType, listSection);
+                    }
+                    case EXPERIENCE, EDUCATION -> {
+                        OrganizationSection organizationSection = new OrganizationSection(new ArrayList<>());
+                        readWithException(dis, () -> {
+                            Organization organization = new Organization(dis.readUTF(), dis.readUTF());
+                            readWithException(dis, () -> {
+                                organization.addPeriod(new Period(LocalDate.parse(dis.readUTF()),
+                                        LocalDate.parse(dis.readUTF()),
+                                        dis.readUTF(),
+                                        dis.readUTF()));
+                            });
+                            organizationSection.addOrganization(organization);
+                        });
+                        resume.setSection(sectionType, organizationSection);
+                    }
+                }
             }
             return resume;
         }
-
     }
 
     private <T> void writeWithException(Collection<T> collection, DataOutputStream dos, ThrowingConsumer<T> consumer) throws IOException {
@@ -81,42 +98,10 @@ public class DataStreamSerializer implements SerializerStrategy {
         }
     }
 
-    private <T> void readWithException(Collection<T> collection, ThrowingReadingConsumer<T> consumer, DataInputStream dis) throws IOException {
+    private void readWithException(DataInputStream dis, ThrowingReadingConsumer consumer) throws IOException {
         int size = dis.readInt();
         for (int i = 0; i < size; i++) {
-            consumer.read((T) collection);
-        }
-    }
-
-    private void readSection(SectionType sectionType, Resume resume, DataInputStream dis) throws IOException {
-        switch (sectionType) {
-            case PERSONAL, OBJECTIVE -> {
-                resume.setSection(sectionType, new TextSection(dis.readUTF()));
-            }
-            case ACHIEVEMENTS, QUALIFICATIONS -> {
-                ListSection listSection = new ListSection(new ArrayList<>());
-                int size = dis.readInt();
-                for (int i = 0; i < size; i++) {
-                    listSection.addString(dis.readUTF());
-                }
-                resume.setSection(sectionType, listSection);
-            }
-            case EXPERIENCE, EDUCATION -> {
-                OrganizationSection organizationSection = new OrganizationSection(new ArrayList<>());
-                int size = dis.readInt();
-                for (int i = 0; i < size; i++) {
-                    Organization organization = new Organization(dis.readUTF(), dis.readUTF());
-                    int periodsSize = dis.readInt();
-                    for (int y = 0; y < periodsSize; y++) {
-                        organization.addPeriod(new Period(LocalDate.parse(dis.readUTF()),
-                                LocalDate.parse(dis.readUTF()),
-                                dis.readUTF(),
-                                dis.readUTF()));
-                    }
-                    organizationSection.addOrganization(organization);
-                }
-                resume.setSection(sectionType, organizationSection);
-            }
+            consumer.read();
         }
     }
 
@@ -124,7 +109,7 @@ public class DataStreamSerializer implements SerializerStrategy {
         void write(T t) throws IOException;
     }
 
-    private interface ThrowingReadingConsumer<T> {
-        void read(T t) throws IOException;
+    private interface ThrowingReadingConsumer {
+        void read() throws IOException;
     }
 }
