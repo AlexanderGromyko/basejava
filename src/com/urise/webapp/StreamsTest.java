@@ -2,6 +2,7 @@ package com.urise.webapp;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class StreamsTest {
@@ -18,19 +19,12 @@ public class StreamsTest {
         return Arrays.stream(values)
                 .distinct()
                 .sorted()
-                .reduce((acc, x) -> acc*10 + x)
-                .getAsInt();
+                .reduce(0, (acc, x) -> acc*10 + x);
     }
 
     private static List<Integer> oddOrEven(List<Integer> integers) {
-        return integers.stream()
-                .collect(Collectors.partitioningBy(x -> x % 2 == 0))
-                .entrySet().stream()
-                .filter(x -> {
-                    if (x.getKey()) {
-                        return (integers.size() - x.getValue().size()) % 2 != 0;
-                    } else return (x.getValue().size()) % 2 == 0;
-                }).findFirst().get()
-                .getValue();
+         Map <Boolean, List<Integer>> map  = integers.stream()
+                .collect(Collectors.partitioningBy(x -> x % 2 == 0));
+        return map.get(false).size() % 2 == 0 ? map.get(false) : map.get(true);
     }
 }
