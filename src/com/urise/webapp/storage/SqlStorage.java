@@ -13,6 +13,11 @@ public class SqlStorage implements Storage {
     public SqlHelper sqlHelper;
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         this.sqlHelper = new SqlHelper(dbUrl, dbUser, dbPassword);
     }
 
@@ -40,10 +45,10 @@ public class SqlStorage implements Storage {
 
     @Override
     public void delete(String uuid) {
-        sqlHelper.execute("DELETE FROM resume WHERE uuid = ? returning uuid", (ps) -> {
+        sqlHelper.execute("DELETE FROM resume WHERE uuid = ?", (ps) -> {
             ps.setString(1, uuid);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
+            int numberOfRows = ps.executeUpdate();
+            if (numberOfRows == 0) {
                 throw new NotExistStorageException("Nothing to delete");
             }
             return null;
@@ -52,11 +57,11 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Resume r) {
-        sqlHelper.execute("UPDATE resume SET full_name = ? WHERE uuid = ? returning uuid", (ps) -> {
+        sqlHelper.execute("UPDATE resume SET full_name = ? WHERE uuid = ?", (ps) -> {
             ps.setString(1, r.getFullName());
             ps.setString(2, r.getUuid());
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
+            int numberOfRows = ps.executeUpdate();
+            if (numberOfRows == 0) {
                 throw new NotExistStorageException("Nothing to update");
             }
             return null;
@@ -75,13 +80,10 @@ public class SqlStorage implements Storage {
     public List<Resume> getAllSorted() {
         return sqlHelper.execute("SELECT * FROM resume ORDER BY full_name ASC", (ps) -> {
             ResultSet rs = ps.executeQuery();
-            ArrayList<Resume> resumes = new ArrayList<> ();
-            if (!rs.next()) {
-                throw new NotExistStorageException("Sql query returns empty result");
-            }
-            do  {
+            ArrayList<Resume> resumes = new ArrayList<>();
+            while (rs.next()) {
                 resumes.add(new Resume(rs.getString("uuid"), rs.getString("full_name")));
-            } while (rs.next());
+            }
             return resumes;
         });
     }
