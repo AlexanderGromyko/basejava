@@ -6,6 +6,7 @@ import com.urise.webapp.model.Resume;
 import com.urise.webapp.sql.SqlHelper;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SqlStorage implements Storage {
@@ -72,7 +73,17 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return null;
+        return sqlHelper.execute("SELECT * FROM resume ORDER BY full_name ASC", (ps) -> {
+            ResultSet rs = ps.executeQuery();
+            ArrayList<Resume> resumes = new ArrayList<> ();
+            if (!rs.next()) {
+                throw new NotExistStorageException("Sql query returns empty result");
+            }
+            do  {
+                resumes.add(new Resume(rs.getString("uuid"), rs.getString("full_name")));
+            } while (rs.next());
+            return resumes;
+        });
     }
 
     @Override
