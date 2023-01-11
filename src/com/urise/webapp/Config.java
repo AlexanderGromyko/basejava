@@ -1,5 +1,7 @@
 package com.urise.webapp;
 
+import com.urise.webapp.storage.SqlStorage;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +16,28 @@ public class Config {
     private String dbUrl;
     private String dbUser;
     private String dbPassword;
+    private SqlStorage storage;
+
+    private Config() {
+        try (InputStream is = new FileInputStream(PROPERTIES)) {
+            properties.load(is);
+            storageDir = new File(properties.getProperty("storage.dir"));
+            dbUrl = properties.getProperty("db.url");
+            dbUser = properties.getProperty("db.user");
+            dbPassword = properties.getProperty("db.password");
+            storage = new SqlStorage(dbUrl, dbUser, dbPassword);
+        } catch (IOException e) {
+            throw new IllegalStateException("Invalid config fil " + PROPERTIES.getAbsolutePath());
+        }
+    }
+
+    public static Config get() {
+        return INSTANCE;
+    }
+
+    public SqlStorage getStorage() {
+        return storage;
+    }
 
     public String getDbUrl() {
         return dbUrl;
@@ -29,19 +53,5 @@ public class Config {
 
     public File getStorageDir() {
         return storageDir;
-    }
-
-    public static Config get() { return INSTANCE; }
-
-    private Config() {
-        try(InputStream is = new FileInputStream(PROPERTIES)) {
-            properties.load(is);
-            storageDir = new File(properties.getProperty("storage.dir"));
-            dbUrl = properties.getProperty("db.url");
-            dbUser = properties.getProperty("db.user");
-            dbPassword = properties.getProperty("db.password");
-        } catch (IOException e) {
-            throw new IllegalStateException("Invalid config fil "+ PROPERTIES.getAbsolutePath());
-        }
     }
 }
