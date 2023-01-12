@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS resume
 
 CREATE TABLE IF NOT EXISTS public.contact
 (
-    id SERIAL,
+    id SERIAL PRIMARY KEY,
     type text NOT NULL,
     value text NOT NULL,
     resume_uuid character(36) NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE
@@ -14,4 +14,4 @@ CREATE TABLE IF NOT EXISTS public.contact
 
 
 CREATE UNIQUE INDEX IF NOT EXISTS contact_uuid_type_index
-    ON public.contact USING btree (resume_uuid, type);
+    ON public.contact (resume_uuid, type);
