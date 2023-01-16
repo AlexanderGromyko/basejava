@@ -122,7 +122,6 @@ public class SqlStorage implements Storage {
                         " SELECT * FROM resume r " +
                         " JOIN contact c " +
                         " ON r.uuid = c.resume_uuid " +
-                        " WHERE r.uuid = ?" +
                         " ORDER BY r.full_name ASC",
                 (ps) -> {
                     ResultSet rs = ps.executeQuery();
