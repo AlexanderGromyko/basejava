@@ -10,9 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractStorageTest {
     protected static final File STORAGE_DIR = Config.get().getStorageDir();
@@ -22,12 +24,11 @@ public abstract class AbstractStorageTest {
     private static final String UUID_4 = "uuid4";
 
     private static final String EMPTY_NAME = "";
-
-    private final Resume RESUME_1 = ResumeTestData.resumeGenerator(UUID_1, EMPTY_NAME);
-    private final Resume RESUME_2 = ResumeTestData.resumeGenerator(UUID_2, EMPTY_NAME);
-    private final Resume RESUME_3 = ResumeTestData.resumeGenerator(UUID_3, EMPTY_NAME);
-    private final Resume RESUME_4 = ResumeTestData.resumeGenerator(UUID_4, EMPTY_NAME);
     final Storage storage;
+    private final Resume RESUME_1 = ResumeTestData.resumeGenerator(UUID_1, UUID_1);
+    private final Resume RESUME_2 = ResumeTestData.resumeGenerator(UUID_2, UUID_2);
+    private final Resume RESUME_3 = ResumeTestData.resumeGenerator(UUID_3, UUID_3);
+    private final Resume RESUME_4 = ResumeTestData.resumeGenerator(UUID_4, EMPTY_NAME);
 
     public AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -65,7 +66,7 @@ public abstract class AbstractStorageTest {
     void update() {
         Resume expectedResume = ResumeTestData.resumeGenerator(UUID_1, EMPTY_NAME);
         storage.update(expectedResume);
-        assertTrue(expectedResume.equals(storage.get(expectedResume.getUuid())));
+        assertEquals(expectedResume, storage.get(expectedResume.getUuid()));
     }
 
     @Test
@@ -100,5 +101,19 @@ public abstract class AbstractStorageTest {
     @Test
     void saveExist() {
         assertThrows(ExistStorageException.class, () -> storage.save(RESUME_1));
+    }
+
+    @Test
+    void getAllSorted() {
+        List<Resume> expectedList = new ArrayList<>();
+        expectedList.add(RESUME_4);
+        expectedList.add(RESUME_1);
+        expectedList.add(RESUME_2);
+        expectedList.add(RESUME_3);
+        storage.save(RESUME_4);
+        List<Resume> actualList = storage.getAllSorted();
+        for (int i = 0; i < actualList.size(); i++) {
+            Assertions.assertEquals(actualList.get(i), expectedList.get(i));
+        }
     }
 }
