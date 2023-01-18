@@ -52,13 +52,7 @@ public class SqlStorage implements Storage {
                     if (!rs.next()) {
                         throw new NotExistStorageException(uuid);
                     }
-                    Resume r = new Resume(uuid, rs.getString("full_name"));
-                    do {
-                        String value = rs.getString("value");
-                        ContactType type = ContactType.valueOf(rs.getString("type"));
-                        r.setContact(type, value);
-                    } while (rs.next());
-                    return r;
+                    return getNextResume(rs);
                 });
     }
 
@@ -105,13 +99,16 @@ public class SqlStorage implements Storage {
     public List<Resume> getAllSorted() {
         return sqlHelper.execute("" +
                         " SELECT * FROM resume r " +
-                        " ORDER BY r.full_name, r.uuid ASC",
+                        " JOIN contact c " +
+                        " ON r.uuid = c.resume_uuid " +
+                        " ORDER BY r.full_name ASC, r.uuid ASC",
                 (ps) -> {
                     ResultSet rs = ps.executeQuery();
                     ArrayList<Resume> resumes = new ArrayList<>();
-                    while (rs.next()) {
-                        resumes.add(get(rs.getString("uuid").strip()));
-                    }
+                    rs.next();
+                    do {
+                        resumes.add(getNextResume(rs));
+                    } while (!rs.isAfterLast());
                     return resumes;
                 });
     }
@@ -130,14 +127,24 @@ public class SqlStorage implements Storage {
     private void insertExistingContacts(Resume r, Connection conn) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("INSERT INTO contact (value, type, resume_uuid) VALUES (?,?,?)")) {
             for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
-                if (e.getValue() != null) {
-                    ps.setString(1, e.getValue());
-                    ps.setString(2, e.getKey().name());
-                    ps.setString(3, r.getUuid());
-                    ps.addBatch();
-                }
+                ps.setString(1, e.getValue());
+                ps.setString(2, e.getKey().name());
+                ps.setString(3, r.getUuid());
+                ps.addBatch();
             }
             ps.executeBatch();
         }
+    }
+
+    private Resume getNextResume(ResultSet rs) throws SQLException {
+        Resume r = new Resume(rs.getString("uuid").strip(), rs.getString("full_name"));
+        do {
+            String value = rs.getString("value");
+            if (value != null) {
+                ContactType type = ContactType.valueOf(rs.getString("type"));
+                r.setContact(type, value);
+            }
+        } while (rs.next() && r.getUuid().equals(rs.getString("uuid").strip()));
+        return r;
     }
 }
