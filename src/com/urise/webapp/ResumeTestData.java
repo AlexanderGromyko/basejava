@@ -219,10 +219,10 @@ public class ResumeTestData {
         resume.setContact(ContactType.STACKOVERFLOW, RandomGenerator.stackoverflow(name));
         resume.setContact(ContactType.HOMEPAGE, RandomGenerator.homepage(name));
 //
-//        resume.setSection(SectionType.PERSONAL, new TextSection(RandomGenerator.randomExperienceTitle()));
-//        resume.setSection(SectionType.OBJECTIVE, new TextSection(RandomGenerator.randomExperienceTitle()));
-//        resume.setSection(SectionType.ACHIEVEMENTS, getFilledExperience());
-//        resume.setSection(SectionType.QUALIFICATIONS, getFilledExperience());
+        resume.setSection(SectionType.PERSONAL, new TextSection(RandomGenerator.randomExperienceTitle()));
+        resume.setSection(SectionType.OBJECTIVE, new TextSection(RandomGenerator.randomExperienceTitle()));
+        resume.setSection(SectionType.ACHIEVEMENTS, getFilledExperience());
+        resume.setSection(SectionType.QUALIFICATIONS, getFilledExperience());
 //        resume.setSection(SectionType.EDUCATION, getFilledOrganizations());
 //        resume.setSection(SectionType.EXPERIENCE, getFilledOrganizations());
         return resume;

@@ -112,6 +112,7 @@ public abstract class AbstractStorageTest {
         expectedList.add(RESUME_3);
         storage.save(RESUME_4);
         List<Resume> actualList = storage.getAllSorted();
+        Assertions.assertEquals(actualList.size(),expectedList.size());
         for (int i = 0; i < actualList.size(); i++) {
             Assertions.assertEquals(actualList.get(i), expectedList.get(i));
         }
