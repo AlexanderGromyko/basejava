@@ -44,7 +44,6 @@ public class ListSection extends AbstractSection implements Serializable {
     @Override
     public String toString() {
         StringBuffer str = new StringBuffer();
-        strings.stream().forEach((v) -> str.append(v+"\n"));
-        return str.toString();
+        return String.join("\n", strings);
     }
 }

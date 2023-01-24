@@ -11,13 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ResumeServlet extends HttpServlet {
+    public Storage storage;
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type","text/html; charset=UTF-8");
         if (request.getServletPath().equals("/resume")) {
-            Storage storage = Config.get().getStorage();
             request.setAttribute("storage", storage);
             RequestDispatcher requestDispatcher = request.getRequestDispatcher("list.jsp");
             requestDispatcher.forward(request, response);
@@ -27,5 +27,9 @@ public class ResumeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    }
+
+    public void init() {
+        storage = Config.get().getStorage();
     }
 }
